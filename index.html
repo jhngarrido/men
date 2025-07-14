@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprende las Tablas de Multiplicar</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f8ff;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #ff6b6b;
+        }
+        .btn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+        .btn-option {
+            background-color: #ff9a3c;
+            min-width: 60px;
+        }
+        .btn-option:hover {
+            background-color: #ff7b25;
+        }
+        .question {
+            font-size: 24px;
+            margin: 20px 0;
+            color: #333;
+        }
+        .options {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .feedback {
+            font-size: 20px;
+            font-weight: bold;
+            min-height: 30px;
+            margin: 15px 0;
+        }
+        .correct {
+            color: #4CAF50;
+        }
+        .incorrect {
+            color: #f44336;
+        }
+        .score {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .table-selector {
+            margin: 20px 0;
+        }
+        .table-btn {
+            background-color: #6b5b95;
+            margin: 5px;
+        }
+        .table-btn:hover {
+            background-color: #5a4a7d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>¡Aprende las Tablas de Multiplicar!</h1>
+        
+        <div id="table-selection" class="table-selection">
+            <h2>Elige una tabla para practicar</h2>
+            <div class="table-selector">
+                <button class="btn table-btn" data-table="1">Tabla del 1</button>
+                <button class="btn table-btn" data-table="2">Tabla del 2</button>
+                <button class="btn table-btn" data-table="3">Tabla del 3</button>
+                <button class="btn table-btn" data-table="4">Tabla del 4</button>
+                <button class="btn table-btn" data-table="5">Tabla del 5</button>
+                <button class="btn table-btn" data-table="6">Tabla del 6</button>
+                <button class="btn table-btn" data-table="7">Tabla del 7</button>
+                <button class="btn table-btn" data-table="8">Tabla del 8</button>
+                <button class="btn table-btn" data-table="9">Tabla del 9</button>
+                <button class="btn table-btn" data-table="10">Tabla del 10</button>
+                <button class="btn table-btn" data-table="random">Todas mezcladas</button>
+            </div>
+        </div>
+        
+        <div id="game-area" style="display: none;">
+            <div class="question" id="question"></div>
+            <div class="options" id="options"></div>
+            <div class="feedback" id="feedback"></div>
+            <div class="score" id="score">Aciertos: 0 | Errores: 0</div>
+            <button id="new-question" class="btn">Nueva Pregunta</button>
+            <button id="change-table" class="btn">Cambiar Tabla</button>
+        </div>
+    </div>
+
+    <script>
+        // Variables del juego
+        let currentTable = 0;
+        let correctAnswer = 0;
+        let score = { correct: 0, incorrect: 0 };
+        
+        // Elementos del DOM
+        const tableSelection = document.getElementById('table-selection');
+        const gameArea = document.getElementById('game-area');
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const feedbackElement = document.getElementById('feedback');
+        const scoreElement = document.getElementById('score');
+        const newQuestionBtn = document.getElementById('new-question');
+        const changeTableBtn = document.getElementById('change-table');
+        
+        // Event listeners para los botones de tabla
+        document.querySelectorAll('.table-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentTable = btn.dataset.table === 'random' ? 'random' : parseInt(btn.dataset.table);
+                tableSelection.style.display = 'none';
+                gameArea.style.display = 'block';
+                generateQuestion();
+            });
+        });
+        
+        // Event listeners para los botones del juego
+        newQuestionBtn.addEventListener('click', generateQuestion);
+        changeTableBtn.addEventListener('click', () => {
+            gameArea.style.display = 'none';
+            tableSelection.style.display = 'block';
+            feedbackElement.textContent = '';
+        });
+        
+        // Genera una nueva pregunta
+        function generateQuestion() {
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'feedback';
+            
+            let multiplier, table;
+            
+            if (currentTable === 'random') {
+                table = Math.floor(Math.random() * 10) + 1;
+                multiplier = Math.floor(Math.random() * 10) + 1;
+            } else {
+                table = currentTable;
+                multiplier = Math.floor(Math.random() * 10) + 1;
+            }
+            
+            correctAnswer = table * multiplier;
+            questionElement.textContent = `¿Cuánto es ${table} × ${multiplier}?`;
+            
+            // Generar opciones de respuesta
+            generateOptions(correctAnswer);
+        }
+        
+        // Genera opciones de respuesta
+        function generateOptions(correct) {
+            optionsElement.innerHTML = '';
+            
+            // Crear un array con la respuesta correcta y algunas incorrectas
+            let options = [correct];
+            while (options.length < 4) {
+                let randomAnswer;
+                if (currentTable === 'random') {
+                    randomAnswer = Math.floor(Math.random() * 100) + 1;
+                } else {
+                    // Para respuestas incorrectas, variar ±1-3 de la respuesta correcta
+                    const variation = Math.floor(Math.random() * 3) + 1;
+                    randomAnswer = Math.random() > 0.5 ? correct + variation : correct - variation;
+                    // Asegurarse de que no sea negativo
+                    randomAnswer = Math.max(1, randomAnswer);
+                }
+                
+                // Asegurarse de que no se repitan opciones
+                if (!options.includes(randomAnswer) && randomAnswer !== correct) {
+                    options.push(randomAnswer);
+                }
+            }
+            
+            // Mezclar las opciones
+            options = shuffleArray(options);
+            
+            // Crear botones para cada opción
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-option';
+                btn.textContent = option;
+                btn.addEventListener('click', () => checkAnswer(option));
+                optionsElement.appendChild(btn);
+            });
+        }
+        
+        // Comprueba la respuesta seleccionada
+        function checkAnswer(selectedAnswer) {
+            if (selectedAnswer == correctAnswer) {
+                feedbackElement.textContent = '¡Correcto! 🎉';
+                feedbackElement.className = 'feedback correct';
+                score.correct++;
+            } else {
+                feedbackElement.textContent = `Oops... La respuesta correcta era ${correctAnswer}`;
+                feedbackElement.className = 'feedback incorrect';
+                score.incorrect++;
+            }
+            
+            scoreElement.textContent = `Aciertos: ${score.correct} | Errores: ${score.incorrect}`;
+            
+            // Deshabilitar los botones después de responder
+            document.querySelectorAll('.btn-option').forEach(btn => {
+                btn.disabled = true;
+            });
+        }
+        
+        // Función para mezclar un array (algoritmo Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+    </script>
+</body>
+</html>
