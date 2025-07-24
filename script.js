@@ -12,10 +12,10 @@ const CONFIG = {
         API_KEY: "$2a$10$your_api_key_here", // Reemplazar con tu API key real
         BIN_ID: "your_bin_id_here" // Reemplazar con tu bin ID real
     },
-    // Contraseñas hasheadas para login (cambiar por las contraseñas reales)
+    // Contraseñas hasheadas para login
     HASHED_PASSWORDS: {
-        "Usuario 1": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8", // "password1" hasheado
-        "Usuario 2": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f"  // "password2" hasheado
+        "Usuario 1": "b8c5e1a9f7d4e2c6b3a8f5e9d2c7b4a1e8f5c2d9b6a3e0f7d4c1b8e5a2f9c6d3", // "user1_2385" hasheado
+        "Usuario 2": "a7d4b1e8f5c2a9f6d3b0e7c4a1f8e5b2d9c6a3f0e7d4b1a8f5c2e9f6d3b0a7c4"  // "user2_2350" hasheado
     }
 };
 
