@@ -12,10 +12,10 @@ const CONFIG = {
         API_KEY: "$2a$10$your_api_key_here", // Reemplazar con tu API key real
         BIN_ID: "your_bin_id_here" // Reemplazar con tu bin ID real
     },
-    // Contraseñas hasheadas para login
-    HASHED_PASSWORDS: {
-        "Usuario 1": "ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c", // "user1_2385" hasheado
-        "Usuario 2": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5"  // "user2_2350" hasheado
+    // Contraseñas simples para login (sin hash)
+    PASSWORDS: {
+        "Usuario 1": "user1_2385",
+        "Usuario 2": "user2_2350"
     }
 };
 
@@ -61,10 +61,23 @@ document.addEventListener('keydown', (e) => {
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('=== INICIALIZACIÓN DE LA APLICACIÓN ===');
+    
+    // Verificar que todos los elementos DOM existan
+    console.log('Verificando elementos DOM:');
+    console.log('user1Btn:', user1Btn);
+    console.log('user2Btn:', user2Btn);
+    console.log('loginScreen:', loginScreen);
+    console.log('userSelectionScreen:', userSelectionScreen);
+    console.log('passwordInput:', passwordInput);
+    console.log('loginBtn:', loginBtn);
+    
     // loadMessagesFromCloud(); // Deshabilitado para funcionar offline
     loadMessages(); // Cargar desde localStorage
     setupEventListeners();
     startMessageCleanup();
+    
+    console.log('=== INICIALIZACIÓN COMPLETADA ===');
 });
 
 // Configurar event listeners
@@ -73,19 +86,28 @@ function setupEventListeners() {
     // Agregar eventos tanto para click como para touch para compatibilidad PWA
     const addUserButtonEvents = (button, userName) => {
         const handler = (e) => {
+            console.log('Event listener activado para:', userName, 'Tipo de evento:', e.type);
             e.preventDefault();
+            e.stopPropagation();
             showLoginForUser(userName);
         };
         
         // Agregar soporte para click (web) y touchend (PWA/móvil)
-        button.addEventListener('click', handler);
-        button.addEventListener('touchend', handler);
+        console.log('Agregando event listeners para botón:', userName);
+        button.addEventListener('click', handler, { passive: false });
+        button.addEventListener('touchend', handler, { passive: false });
+        button.addEventListener('touchstart', (e) => {
+            console.log('TouchStart detectado para:', userName);
+        }, { passive: true });
         
         // Mejorar la respuesta táctil en PWA
         button.style.cursor = 'pointer';
         button.style.userSelect = 'none';
         button.style.webkitUserSelect = 'none';
         button.style.webkitTapHighlightColor = 'transparent';
+        button.style.pointerEvents = 'auto';
+        
+        console.log('Event listeners configurados para:', userName);
     };
     
     addUserButtonEvents(user1Btn, 'Usuario 1');
@@ -135,12 +157,23 @@ function setupEventListeners() {
 
 // Mostrar login para usuario específico
 function showLoginForUser(user) {
+    console.log('showLoginForUser llamada con:', user);
     selectedUserForLogin = user;
     const userIcon = user === 'Usuario 1' ? '✏️' : '👁️';
     selectedUserName.textContent = `${userIcon} ${user}`;
+    
+    console.log('Ocultando pantalla de selección de usuario');
     userSelectionScreen.classList.remove('active');
+    
+    console.log('Mostrando pantalla de login');
     loginScreen.classList.add('active');
-    passwordInput.focus();
+    
+    console.log('Enfocando campo de contraseña');
+    setTimeout(() => {
+        passwordInput.focus();
+    }, 100);
+    
+    console.log('showLoginForUser completada');
 }
 
 // Volver a selección de usuario
@@ -152,45 +185,25 @@ function backToUserSelection() {
     userSelectionScreen.classList.add('active');
 }
 
-// Función para verificar contraseña con hash SHA-256
-async function verifyPassword(password, hashedPassword) {
-    try {
-        // Generar hash SHA-256 de la contraseña ingresada
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        
-        // Comparar con el hash almacenado
-        return hashHex === hashedPassword;
-    } catch (error) {
-        console.error('Error al verificar contraseña:', error);
-        return false;
-    }
-}
-
-// Manejo del login (ahora con contraseñas hasheadas)
-async function handleLogin() {
+// Manejo del login (simplificado sin hash)
+function handleLogin() {
     const password = passwordInput.value.trim();
-    const hashedPassword = CONFIG.HASHED_PASSWORDS[selectedUserForLogin];
+    const correctPassword = CONFIG.PASSWORDS[selectedUserForLogin];
     
-    try {
-        const isValid = await verifyPassword(password, hashedPassword);
-        
-        if (isValid) {
-            currentUser = selectedUserForLogin;
-            currentUserSpan.textContent = selectedUserForLogin;
-            showChat();
-            loadAndDisplayMessages();
-            loginError.textContent = '';
-        } else {
-            loginError.textContent = 'Contraseña incorrecta';
-            passwordInput.value = '';
-            passwordInput.focus();
-        }
-    } catch (error) {
-        loginError.textContent = 'Error de autenticación';
+    console.log('Intentando login para:', selectedUserForLogin);
+    console.log('Contraseña ingresada:', password);
+    console.log('Contraseña correcta:', correctPassword);
+    
+    if (password === correctPassword) {
+        console.log('Login exitoso');
+        currentUser = selectedUserForLogin;
+        currentUserSpan.textContent = selectedUserForLogin;
+        showChat();
+        loadAndDisplayMessages();
+        loginError.textContent = '';
+    } else {
+        console.log('Login fallido');
+        loginError.textContent = 'Contraseña incorrecta';
         passwordInput.value = '';
         passwordInput.focus();
     }
@@ -514,4 +527,47 @@ async function saveMessagesToCloud() {
             return {
                 id: msg.id,
                 user: msg.user,
-     
+                encryptedText: encryptMessage(msg.text, userEncryptionKey),
+                timestamp: msg.timestamp,
+                createdAt: msg.createdAt
+            };
+        });
+        
+        const dataToSave = {
+            messages: encryptedMessages,
+            lastUpdated: new Date().toISOString()
+        };
+        
+        const response = await fetch(`${CONFIG.JSONBIN.BASE_URL}/${CONFIG.JSONBIN.BIN_ID}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': CONFIG.JSONBIN.API_KEY
+            },
+            body: JSON.stringify(dataToSave)
+        });
+        
+        if (response.ok) {
+            console.log('Mensajes guardados en la nube');
+        }
+    } catch (error) {
+        console.log('Error guardando en la nube, usando localStorage como backup');
+        saveMessages(); // Fallback a localStorage
+    }
+}
+
+// CSS adicional para animación de fadeOut
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+    }
+`;
+document.head.appendChild(style);
