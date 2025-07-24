@@ -115,23 +115,32 @@ function forcePWAEvents() {
         const newUser1 = user1.cloneNode(true);
         user1.parentNode.replaceChild(newUser1, user1);
         
-        // Aplicar eventos directos
-        newUser1.ontouchstart = (e) => {
+        // Aplicar eventos directos con lógica inline
+        const openLoginUser1 = (e) => {
             e.preventDefault();
-            console.log('TouchStart PWA - Usuario 1');
-            showLoginForUser('Usuario 1');
+            console.log('=== ABRIENDO LOGIN USUARIO 1 PWA ===');
+            
+            // Lógica directa sin depender de showLoginForUser
+            selectedUserForLogin = 'Usuario 1';
+            
+            const loginScreen = document.getElementById('loginScreen');
+            const userSelectionScreen = document.getElementById('userSelectionScreen');
+            const selectedUserName = document.getElementById('selectedUserName');
+            const passwordInput = document.getElementById('passwordInput');
+            
+            if (selectedUserName) selectedUserName.textContent = '✏️ Usuario 1';
+            if (userSelectionScreen) userSelectionScreen.classList.remove('active');
+            if (loginScreen) loginScreen.classList.add('active');
+            if (passwordInput) {
+                setTimeout(() => passwordInput.focus(), 100);
+            }
+            
+            console.log('Login Usuario 1 abierto exitosamente');
         };
         
-        newUser1.ontouchend = (e) => {
-            e.preventDefault();
-            console.log('TouchEnd PWA - Usuario 1');
-        };
-        
-        newUser1.onclick = (e) => {
-            e.preventDefault();
-            console.log('Click PWA - Usuario 1');
-            showLoginForUser('Usuario 1');
-        };
+        newUser1.ontouchstart = openLoginUser1;
+        newUser1.ontouchend = openLoginUser1;
+        newUser1.onclick = openLoginUser1;
         
         // Estilo para mejor respuesta táctil
         newUser1.style.touchAction = 'manipulation';
@@ -147,23 +156,32 @@ function forcePWAEvents() {
         const newUser2 = user2.cloneNode(true);
         user2.parentNode.replaceChild(newUser2, user2);
         
-        // Aplicar eventos directos
-        newUser2.ontouchstart = (e) => {
+        // Aplicar eventos directos con lógica inline
+        const openLoginUser2 = (e) => {
             e.preventDefault();
-            console.log('TouchStart PWA - Usuario 2');
-            showLoginForUser('Usuario 2');
+            console.log('=== ABRIENDO LOGIN USUARIO 2 PWA ===');
+            
+            // Lógica directa sin depender de showLoginForUser
+            selectedUserForLogin = 'Usuario 2';
+            
+            const loginScreen = document.getElementById('loginScreen');
+            const userSelectionScreen = document.getElementById('userSelectionScreen');
+            const selectedUserName = document.getElementById('selectedUserName');
+            const passwordInput = document.getElementById('passwordInput');
+            
+            if (selectedUserName) selectedUserName.textContent = '👁️ Usuario 2';
+            if (userSelectionScreen) userSelectionScreen.classList.remove('active');
+            if (loginScreen) loginScreen.classList.add('active');
+            if (passwordInput) {
+                setTimeout(() => passwordInput.focus(), 100);
+            }
+            
+            console.log('Login Usuario 2 abierto exitosamente');
         };
         
-        newUser2.ontouchend = (e) => {
-            e.preventDefault();
-            console.log('TouchEnd PWA - Usuario 2');
-        };
-        
-        newUser2.onclick = (e) => {
-            e.preventDefault();
-            console.log('Click PWA - Usuario 2');
-            showLoginForUser('Usuario 2');
-        };
+        newUser2.ontouchstart = openLoginUser2;
+        newUser2.ontouchend = openLoginUser2;
+        newUser2.onclick = openLoginUser2;
         
         // Estilo para mejor respuesta táctil
         newUser2.style.touchAction = 'manipulation';
@@ -189,15 +207,41 @@ window.debugPWA = () => {
     forcePWAEvents();
 };
 
-// Activación manual directa
+// Activación manual directa con lógica inline
 window.manualLogin1 = () => {
     console.log('=== ACTIVACIÓN MANUAL USUARIO 1 ===');
-    showLoginForUser('Usuario 1');
+    
+    // Lógica directa
+    selectedUserForLogin = 'Usuario 1';
+    const loginScreen = document.getElementById('loginScreen');
+    const userSelectionScreen = document.getElementById('userSelectionScreen');
+    const selectedUserName = document.getElementById('selectedUserName');
+    const passwordInput = document.getElementById('passwordInput');
+    
+    if (selectedUserName) selectedUserName.textContent = '✏️ Usuario 1';
+    if (userSelectionScreen) userSelectionScreen.classList.remove('active');
+    if (loginScreen) loginScreen.classList.add('active');
+    if (passwordInput) setTimeout(() => passwordInput.focus(), 100);
+    
+    console.log('Login Usuario 1 manual exitoso');
 };
 
 window.manualLogin2 = () => {
     console.log('=== ACTIVACIÓN MANUAL USUARIO 2 ===');
-    showLoginForUser('Usuario 2');
+    
+    // Lógica directa
+    selectedUserForLogin = 'Usuario 2';
+    const loginScreen = document.getElementById('loginScreen');
+    const userSelectionScreen = document.getElementById('userSelectionScreen');
+    const selectedUserName = document.getElementById('selectedUserName');
+    const passwordInput = document.getElementById('passwordInput');
+    
+    if (selectedUserName) selectedUserName.textContent = '👁️ Usuario 2';
+    if (userSelectionScreen) userSelectionScreen.classList.remove('active');
+    if (loginScreen) loginScreen.classList.add('active');
+    if (passwordInput) setTimeout(() => passwordInput.focus(), 100);
+    
+    console.log('Login Usuario 2 manual exitoso');
 };
 
 // Función de ayuda para PWA
