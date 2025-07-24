@@ -11,7 +11,7 @@ const CONFIG = {
     // Contraseñas simples para login (sin hash)
     PASSWORDS: {
         'Usuario 1': 'flor35',
-        'Usuario 2': 'user2_2350'
+        'Usuario 2': 'cielo35'
     }
 };
 
