@@ -6,8 +6,8 @@ const SECURE_CONFIG = {
         BASE_URL: "https://api.jsonbin.io/v3/b"
     },
     HASHED_PASSWORDS: {
-        "Usuario 1": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", // user1_2385
-        "Usuario 2": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae" // user2_2350
+        "Usuario 1": "e02bf9ef1a84e4c267e72fadb5d88d8b039bacbd6a657dcfa23317761599372a", // user1_2385
+        "Usuario 2": "37abac297bbd5999faed2e33c237f523829404e3a8a30361acb3c7e92ed7bdbb" // user2_2350
     }
 };
 
