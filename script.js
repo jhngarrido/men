@@ -10,8 +10,8 @@ const CONFIG = {
     // JSONBin.io configuración eliminada para funcionamiento offline
     // Contraseñas simples para login (sin hash)
     PASSWORDS: {
-        "Usuario 1": "user1_2385",
-        "Usuario 2": "user2_2350"
+        'Usuario 1': 'flor35',
+        'Usuario 2': 'user2_2350'
     }
 };
 
