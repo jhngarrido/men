@@ -84,8 +84,131 @@ document.addEventListener('DOMContentLoaded', () => {
         showLoginForUser('Usuario 2');
     };
     
+    // Diagnóstico PWA y activación forzada
+    setTimeout(() => {
+        console.log('=== DIAGNÓSTICO PWA ===');
+        console.log('Es PWA:', window.matchMedia('(display-mode: standalone)').matches);
+        console.log('User agent:', navigator.userAgent);
+        
+        // Activación forzada para PWA
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('PWA detectada - Aplicando fix de eventos...');
+            forcePWAEvents();
+        }
+    }, 2000);
+    
     console.log('=== INICIALIZACIÓN COMPLETADA ===');
 });
+
+// Fix específico para PWA instalada
+function forcePWAEvents() {
+    console.log('=== APLICANDO FIX PWA ===');
+    
+    // Remover todos los event listeners existentes y recrearlos
+    const user1 = document.getElementById('user1Btn');
+    const user2 = document.getElementById('user2Btn');
+    
+    if (user1) {
+        console.log('Aplicando fix a Usuario 1...');
+        
+        // Crear nuevo elemento para evitar problemas de eventos
+        const newUser1 = user1.cloneNode(true);
+        user1.parentNode.replaceChild(newUser1, user1);
+        
+        // Aplicar eventos directos
+        newUser1.ontouchstart = (e) => {
+            e.preventDefault();
+            console.log('TouchStart PWA - Usuario 1');
+            showLoginForUser('Usuario 1');
+        };
+        
+        newUser1.ontouchend = (e) => {
+            e.preventDefault();
+            console.log('TouchEnd PWA - Usuario 1');
+        };
+        
+        newUser1.onclick = (e) => {
+            e.preventDefault();
+            console.log('Click PWA - Usuario 1');
+            showLoginForUser('Usuario 1');
+        };
+        
+        // Estilo para mejor respuesta táctil
+        newUser1.style.touchAction = 'manipulation';
+        newUser1.style.userSelect = 'none';
+        newUser1.style.webkitUserSelect = 'none';
+        newUser1.style.webkitTouchCallout = 'none';
+    }
+    
+    if (user2) {
+        console.log('Aplicando fix a Usuario 2...');
+        
+        // Crear nuevo elemento para evitar problemas de eventos
+        const newUser2 = user2.cloneNode(true);
+        user2.parentNode.replaceChild(newUser2, user2);
+        
+        // Aplicar eventos directos
+        newUser2.ontouchstart = (e) => {
+            e.preventDefault();
+            console.log('TouchStart PWA - Usuario 2');
+            showLoginForUser('Usuario 2');
+        };
+        
+        newUser2.ontouchend = (e) => {
+            e.preventDefault();
+            console.log('TouchEnd PWA - Usuario 2');
+        };
+        
+        newUser2.onclick = (e) => {
+            e.preventDefault();
+            console.log('Click PWA - Usuario 2');
+            showLoginForUser('Usuario 2');
+        };
+        
+        // Estilo para mejor respuesta táctil
+        newUser2.style.touchAction = 'manipulation';
+        newUser2.style.userSelect = 'none';
+        newUser2.style.webkitUserSelect = 'none';
+        newUser2.style.webkitTouchCallout = 'none';
+    }
+    
+    console.log('Fix PWA aplicado exitosamente');
+}
+
+// Métodos de diagnóstico y activación manual para PWA
+window.debugPWA = () => {
+    console.log('=== DEBUG PWA ===');
+    console.log('Es PWA:', window.matchMedia('(display-mode: standalone)').matches);
+    console.log('user1Btn:', document.getElementById('user1Btn'));
+    console.log('user2Btn:', document.getElementById('user2Btn'));
+    console.log('loginScreen:', document.getElementById('loginScreen'));
+    console.log('userSelectionScreen:', document.getElementById('userSelectionScreen'));
+    
+    // Intentar activación manual
+    console.log('Aplicando fix manual...');
+    forcePWAEvents();
+};
+
+// Activación manual directa
+window.manualLogin1 = () => {
+    console.log('=== ACTIVACIÓN MANUAL USUARIO 1 ===');
+    showLoginForUser('Usuario 1');
+};
+
+window.manualLogin2 = () => {
+    console.log('=== ACTIVACIÓN MANUAL USUARIO 2 ===');
+    showLoginForUser('Usuario 2');
+};
+
+// Función de ayuda para PWA
+window.helpPWA = () => {
+    console.log('=== AYUDA PWA ===');
+    console.log('Si los botones no responden, prueba estos comandos en la consola:');
+    console.log('- debugPWA() : Diagnóstico completo');
+    console.log('- manualLogin1() : Abrir login Usuario 1');
+    console.log('- manualLogin2() : Abrir login Usuario 2');
+    console.log('- forcePWAEvents() : Aplicar fix de eventos');
+};
 
 // Configurar event listeners
 function setupEventListeners() {
