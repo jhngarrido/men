@@ -61,7 +61,8 @@ document.addEventListener('keydown', (e) => {
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {
-    loadMessagesFromCloud(); // Cargar desde la nube primero
+    // loadMessagesFromCloud(); // Deshabilitado para funcionar offline
+    loadMessages(); // Cargar desde localStorage
     setupEventListeners();
     startMessageCleanup();
 });
