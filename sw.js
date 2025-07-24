@@ -75,7 +75,10 @@ self.addEventListener('fetch', event => {
             // Agregar al caché
             caches.open(CACHE_NAME)
               .then(cache => {
-                cache.put(event.request, responseToCache);
+                // Solo cachear requests con schemes soportados
+                if (event.request.url.startsWith('http://') || event.request.url.startsWith('https://')) {
+                  cache.put(event.request, responseToCache);
+                }
               });
 
             return response;
@@ -125,4 +128,3 @@ self.addEventListener('notificationclick', event => {
     clients.openWindow('./')
   );
 });
-
