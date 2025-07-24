@@ -69,21 +69,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Configurar event listeners
 function setupEventListeners() {
-    // Selección de usuario (ahora es el primer paso)
-    user1Btn.addEventListener('click', () => showLoginForUser('Usuario 1'));
-    user2Btn.addEventListener('click', () => showLoginForUser('Usuario 2'));
+    // Selección de usuario (ahora es el primer paso) - Soporte para web y PWA
+    // Agregar eventos tanto para click como para touch para compatibilidad PWA
+    const addUserButtonEvents = (button, userName) => {
+        const handler = (e) => {
+            e.preventDefault();
+            showLoginForUser(userName);
+        };
+        
+        // Agregar soporte para click (web) y touchend (PWA/móvil)
+        button.addEventListener('click', handler);
+        button.addEventListener('touchend', handler);
+        
+        // Mejorar la respuesta táctil en PWA
+        button.style.cursor = 'pointer';
+        button.style.userSelect = 'none';
+        button.style.webkitUserSelect = 'none';
+        button.style.webkitTapHighlightColor = 'transparent';
+    };
     
-    // Login
-    loginBtn.addEventListener('click', handleLogin);
+    addUserButtonEvents(user1Btn, 'Usuario 1');
+    addUserButtonEvents(user2Btn, 'Usuario 2');
+    
+    // Función helper para agregar eventos PWA-compatible a cualquier botón
+    const addPWAButtonEvents = (button, handler) => {
+        const wrappedHandler = (e) => {
+            e.preventDefault();
+            handler();
+        };
+        button.addEventListener('click', wrappedHandler);
+        button.addEventListener('touchend', wrappedHandler);
+        button.style.cursor = 'pointer';
+        button.style.userSelect = 'none';
+        button.style.webkitUserSelect = 'none';
+        button.style.webkitTapHighlightColor = 'transparent';
+    };
+    
+    // Login - Mejorado para PWA
+    addPWAButtonEvents(loginBtn, handleLogin);
     passwordInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleLogin();
     });
     
-    // Botón volver
-    backBtn.addEventListener('click', backToUserSelection);
+    // Botón volver - Mejorado para PWA
+    addPWAButtonEvents(backBtn, backToUserSelection);
     
-    // Chat
-    sendBtn.addEventListener('click', sendMessage);
+    // Chat - Mejorado para PWA
+    addPWAButtonEvents(sendBtn, sendMessage);
     messageInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -91,8 +123,8 @@ function setupEventListeners() {
         }
     });
     
-    // Logout
-    logoutBtn.addEventListener('click', logout);
+    // Logout - Mejorado para PWA
+    addPWAButtonEvents(logoutBtn, logout);
     
     // Auto-resize textarea
     messageInput.addEventListener('input', () => {
@@ -482,47 +514,4 @@ async function saveMessagesToCloud() {
             return {
                 id: msg.id,
                 user: msg.user,
-                encryptedText: encryptMessage(msg.text, userEncryptionKey),
-                timestamp: msg.timestamp,
-                createdAt: msg.createdAt
-            };
-        });
-        
-        const dataToSave = {
-            messages: encryptedMessages,
-            lastUpdated: new Date().toISOString()
-        };
-        
-        const response = await fetch(`${CONFIG.JSONBIN.BASE_URL}/${CONFIG.JSONBIN.BIN_ID}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Master-Key': CONFIG.JSONBIN.API_KEY
-            },
-            body: JSON.stringify(dataToSave)
-        });
-        
-        if (response.ok) {
-            console.log('Mensajes guardados en la nube');
-        }
-    } catch (error) {
-        console.log('Error guardando en la nube, usando localStorage como backup');
-        saveMessages(); // Fallback a localStorage
-    }
-}
-
-// CSS adicional para animación de fadeOut
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes fadeOut {
-        from {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        to {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-    }
-`;
-document.head.appendChild(style);
+     
