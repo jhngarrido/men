@@ -4,6 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mensajería Privada</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Sistema de mensajería privada para dos personas con auto-eliminación de mensajes">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Mensajería Privada">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
+    
+    <!-- Prevent text selection and copy -->
+    <meta name="format-detection" content="telephone=no">
+    
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -61,6 +81,117 @@
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script src="script.js"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registrado exitosamente:', registration.scope);
+                        
+                        // Verificar actualizaciones
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // Nueva versión disponible
+                                    if (confirm('Nueva versión disponible. ¿Actualizar ahora?')) {
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.log('Error al registrar Service Worker:', error);
+                    });
+            });
+        }
+        
+        // Prompt de instalación PWA
+        let deferredPrompt;
+        let installButton;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevenir que Chrome 67 y anteriores muestren automáticamente el prompt
+            e.preventDefault();
+            // Guardar el evento para poder dispararlo después
+            deferredPrompt = e;
+            
+            // Crear botón de instalación si no existe
+            if (!installButton) {
+                installButton = document.createElement('button');
+                installButton.textContent = '📱 Instalar App';
+                installButton.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: #4CAF50;
+                    color: white;
+                    border: none;
+                    padding: 12px 16px;
+                    border-radius: 25px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    z-index: 1000;
+                    transition: all 0.3s ease;
+                `;
+                
+                installButton.addEventListener('mouseover', () => {
+                    installButton.style.transform = 'scale(1.05)';
+                });
+                
+                installButton.addEventListener('mouseout', () => {
+                    installButton.style.transform = 'scale(1)';
+                });
+                
+                installButton.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        // Mostrar el prompt de instalación
+                        deferredPrompt.prompt();
+                        
+                        // Esperar a que el usuario responda al prompt
+                        const { outcome } = await deferredPrompt.userChoice;
+                        
+                        if (outcome === 'accepted') {
+                            console.log('Usuario aceptó la instalación');
+                        } else {
+                            console.log('Usuario rechazó la instalación');
+                        }
+                        
+                        // Limpiar el prompt
+                        deferredPrompt = null;
+                        installButton.style.display = 'none';
+                    }
+                });
+                
+                document.body.appendChild(installButton);
+            }
+        });
+        
+        // Ocultar botón si la app ya está instalada
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA instalada exitosamente');
+            if (installButton) {
+                installButton.style.display = 'none';
+            }
+            deferredPrompt = null;
+        });
+        
+        // Detectar si la app se está ejecutando como PWA
+        window.addEventListener('load', () => {
+            if (window.matchMedia('(display-mode: standalone)').matches || 
+                window.navigator.standalone === true) {
+                console.log('Ejecutándose como PWA');
+                document.body.classList.add('pwa-mode');
+            }
+        });
+    </script>
 </body>
 </html>
