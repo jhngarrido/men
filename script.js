@@ -1,32 +1,3 @@
-// Configuración integrada para GitHub Pages
-const SECURE_CONFIG = {
-    JSONBIN: {
-        API_KEY: "$2a$10$Q2VqLWbQB3FnTnB56nqsBQ361P2.9PFcaZNBM4hgYTf8MbAux6NS",
-        BIN_ID: "68824e96ae596e708fbb1d15",
-        BASE_URL: "https://api.jsonbin.io/v3/b"
-    },
-    HASHED_PASSWORDS: {
-        "Usuario 1": "e02bf9ef1a84e4c267e72fadb5d88d8b039bacbd6a657dcfa23317761599372a", // user1_2385
-        "Usuario 2": "37abac297bbd5999faed2e33c237f523829404e3a8a30361acb3c7e92ed7bdbb" // user2_2350
-    }
-};
-
-// Función para hashear contraseñas (SHA-256)
-async function hashPassword(password) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hash = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hash))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
-}
-
-// Función para verificar contraseñas
-async function verifyPassword(inputPassword, hashedPassword) {
-    const inputHash = await hashPassword(inputPassword);
-    return inputHash === hashedPassword;
-}
-
 // Configuración del sistema
 const CONFIG = {
     // Contraseñas originales para encriptación (NO las contraseñas de login)
@@ -36,10 +7,16 @@ const CONFIG = {
     },
     STORAGE_KEY: "mensajeria_privada",
     MESSAGE_EXPIRY_HOURS: 48,
-    // JSONBin.io configuración (ahora viene de config.js)
-    JSONBIN: SECURE_CONFIG.JSONBIN,
-    // Contraseñas hasheadas para login (ahora viene de config.js)
-    HASHED_PASSWORDS: SECURE_CONFIG.HASHED_PASSWORDS
+    // JSONBin.io configuración
+    JSONBIN: {
+        API_KEY: "$2a$10$your_api_key_here", // Reemplazar con tu API key real
+        BIN_ID: "your_bin_id_here" // Reemplazar con tu bin ID real
+    },
+    // Contraseñas hasheadas para login (cambiar por las contraseñas reales)
+    HASHED_PASSWORDS: {
+        "Usuario 1": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8", // "password1" hasheado
+        "Usuario 2": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f"  // "password2" hasheado
+    }
 };
 
 // Variables globales
