@@ -73,41 +73,66 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     startMessageCleanup();
     
+    // Método alternativo para PWA - Agregar funciones globales
+    window.loginUser1 = () => {
+        console.log('=== FUNCIÓN GLOBAL USUARIO 1 ===');
+        showLoginForUser('Usuario 1');
+    };
+    
+    window.loginUser2 = () => {
+        console.log('=== FUNCIÓN GLOBAL USUARIO 2 ===');
+        showLoginForUser('Usuario 2');
+    };
+    
     console.log('=== INICIALIZACIÓN COMPLETADA ===');
 });
 
 // Configurar event listeners
 function setupEventListeners() {
-    // Selección de usuario (ahora es el primer paso) - Soporte para web y PWA
-    // Agregar eventos tanto para click como para touch para compatibilidad PWA
-    const addUserButtonEvents = (button, userName) => {
-        const handler = (e) => {
-            console.log('Event listener activado para:', userName, 'Tipo de evento:', e.type);
-            e.preventDefault();
-            e.stopPropagation();
-            showLoginForUser(userName);
-        };
-        
-        // Agregar soporte para click (web) y touchend (PWA/móvil)
-        console.log('Agregando event listeners para botón:', userName);
-        button.addEventListener('click', handler, { passive: false });
-        button.addEventListener('touchend', handler, { passive: false });
-        button.addEventListener('touchstart', (e) => {
-            console.log('TouchStart detectado para:', userName);
-        }, { passive: true });
-        
-        // Mejorar la respuesta táctil en PWA
-        button.style.cursor = 'pointer';
-        button.style.userSelect = 'none';
-        button.style.webkitUserSelect = 'none';
-        button.style.webkitTapHighlightColor = 'transparent';
-        button.style.pointerEvents = 'auto';
-        
-        console.log('Event listeners configurados para:', userName);
+    // Selección de usuario - Múltiples métodos para máxima compatibilidad PWA
+    console.log('Configurando event listeners para botones de usuario...');
+    
+    // Función simple para Usuario 1
+    const loginUser1 = () => {
+        console.log('=== CLICK EN USUARIO 1 ===');
+        showLoginForUser('Usuario 1');
     };
     
-    addUserButtonEvents(user1Btn, 'Usuario 1');
-    addUserButtonEvents(user2Btn, 'Usuario 2');
+    // Función simple para Usuario 2
+    const loginUser2 = () => {
+        console.log('=== CLICK EN USUARIO 2 ===');
+        showLoginForUser('Usuario 2');
+    };
+    
+    // Múltiples event listeners para Usuario 1
+    if (user1Btn) {
+        console.log('Configurando eventos para Usuario 1...');
+        user1Btn.onclick = loginUser1;
+        user1Btn.addEventListener('click', loginUser1);
+        user1Btn.addEventListener('touchstart', loginUser1);
+        user1Btn.addEventListener('touchend', loginUser1);
+        user1Btn.addEventListener('mousedown', loginUser1);
+        user1Btn.style.cursor = 'pointer';
+        user1Btn.style.pointerEvents = 'auto';
+        console.log('Usuario 1 configurado');
+    } else {
+        console.error('user1Btn no encontrado!');
+    }
+    
+    // Múltiples event listeners para Usuario 2
+    if (user2Btn) {
+        console.log('Configurando eventos para Usuario 2...');
+        user2Btn.onclick = loginUser2;
+        user2Btn.addEventListener('click', loginUser2);
+        user2Btn.addEventListener('touchstart', loginUser2);
+        user2Btn.addEventListener('touchend', loginUser2);
+        user2Btn.addEventListener('mousedown', loginUser2);
+        user2Btn.style.cursor = 'pointer';
+        user2Btn.style.pointerEvents = 'auto';
+        console.log('Usuario 2 configurado');
+    } else {
+        console.error('user2Btn no encontrado!');
+    }
     
     // Función helper para agregar eventos PWA-compatible a cualquier botón
     const addPWAButtonEvents = (button, handler) => {
@@ -181,27 +206,39 @@ function backToUserSelection() {
     userSelectionScreen.classList.add('active');
 }
 
-// Manejo del login (simplificado sin hash)
+// Manejo del login (ultra-simplificado)
 function handleLogin() {
-    const password = passwordInput.value.trim();
-    const correctPassword = CONFIG.PASSWORDS[selectedUserForLogin];
+    console.log('=== INICIANDO PROCESO DE LOGIN ===');
     
-    console.log('Intentando login para:', selectedUserForLogin);
+    const password = passwordInput ? passwordInput.value.trim() : '';
+    console.log('Usuario seleccionado:', selectedUserForLogin);
     console.log('Contraseña ingresada:', password);
-    console.log('Contraseña correcta:', correctPassword);
     
-    if (password === correctPassword) {
-        console.log('Login exitoso');
+    // Verificación directa y simple
+    let loginExitoso = false;
+    
+    if (selectedUserForLogin === 'Usuario 1' && password === 'user1_2385') {
+        loginExitoso = true;
+    } else if (selectedUserForLogin === 'Usuario 2' && password === 'user2_2350') {
+        loginExitoso = true;
+    }
+    
+    console.log('Login exitoso:', loginExitoso);
+    
+    if (loginExitoso) {
+        console.log('=== LOGIN EXITOSO ===');
         currentUser = selectedUserForLogin;
-        currentUserSpan.textContent = selectedUserForLogin;
+        if (currentUserSpan) currentUserSpan.textContent = selectedUserForLogin;
         showChat();
         loadAndDisplayMessages();
-        loginError.textContent = '';
+        if (loginError) loginError.textContent = '';
     } else {
-        console.log('Login fallido');
-        loginError.textContent = 'Contraseña incorrecta';
-        passwordInput.value = '';
-        passwordInput.focus();
+        console.log('=== LOGIN FALLIDO ===');
+        if (loginError) loginError.textContent = 'Contraseña incorrecta';
+        if (passwordInput) {
+            passwordInput.value = '';
+            passwordInput.focus();
+        }
     }
 }
 
