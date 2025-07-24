@@ -7,11 +7,7 @@ const CONFIG = {
     },
     STORAGE_KEY: "mensajeria_privada",
     MESSAGE_EXPIRY_HOURS: 48,
-    // JSONBin.io configuración
-    JSONBIN: {
-        API_KEY: "$2a$10$your_api_key_here", // Reemplazar con tu API key real
-        BIN_ID: "your_bin_id_here" // Reemplazar con tu bin ID real
-    },
+    // JSONBin.io configuración eliminada para funcionamiento offline
     // Contraseñas simples para login (sin hash)
     PASSWORDS: {
         "Usuario 1": "user1_2385",
@@ -447,7 +443,7 @@ window.addEventListener('beforeunload', (e) => {
 // Manejo de visibilidad de la página para cargar mensajes
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
-        loadMessagesFromCloud();
+        // loadMessagesFromCloud(); // Eliminado para funcionar offline
     }
 });
 
@@ -478,83 +474,10 @@ function decryptMessage(encryptedText, password) {
     }
 }
 
-// ===== FUNCIONES DE JSONBIN API =====
+// ===== FUNCIONES DE JSONBIN API ELIMINADAS =====
+// Todas las funciones de JSONBin han sido eliminadas para funcionamiento offline
 
-// Cargar mensajes desde JSONBin
-async function loadMessagesFromCloud() {
-    try {
-        const response = await fetch(`${CONFIG.JSONBIN.BASE_URL}/${CONFIG.JSONBIN.BIN_ID}/latest`, {
-            method: 'GET',
-            headers: {
-                'X-Master-Key': CONFIG.JSONBIN.API_KEY,
-                'X-Bin-Meta': 'false'
-            }
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            if (data.messages && Array.isArray(data.messages)) {
-                // Desencriptar mensajes
-                const decryptedMessages = data.messages.map(msg => {
-                    const userEncryptionKey = CONFIG.ENCRYPTION_KEYS[msg.user];
-                    return {
-                        ...msg,
-                        text: decryptMessage(msg.encryptedText, userEncryptionKey)
-                    };
-                }).filter(msg => msg.text !== '[Mensaje corrupto]');
-                
-                messages = decryptedMessages;
-                cleanExpiredMessages();
-                updateMessageCounters();
-                
-                if (currentUser) {
-                    loadAndDisplayMessages();
-                }
-            }
-        }
-    } catch (error) {
-        console.log('Error cargando mensajes de la nube, usando localStorage');
-        loadMessages(); // Fallback a localStorage
-    }
-}
-
-// Guardar mensajes en JSONBin
-async function saveMessagesToCloud() {
-    try {
-        // Encriptar mensajes antes de enviar
-        const encryptedMessages = messages.map(msg => {
-            const userEncryptionKey = CONFIG.ENCRYPTION_KEYS[msg.user];
-            return {
-                id: msg.id,
-                user: msg.user,
-                encryptedText: encryptMessage(msg.text, userEncryptionKey),
-                timestamp: msg.timestamp,
-                createdAt: msg.createdAt
-            };
-        });
-        
-        const dataToSave = {
-            messages: encryptedMessages,
-            lastUpdated: new Date().toISOString()
-        };
-        
-        const response = await fetch(`${CONFIG.JSONBIN.BASE_URL}/${CONFIG.JSONBIN.BIN_ID}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Master-Key': CONFIG.JSONBIN.API_KEY
-            },
-            body: JSON.stringify(dataToSave)
-        });
-        
-        if (response.ok) {
-            console.log('Mensajes guardados en la nube');
-        }
-    } catch (error) {
-        console.log('Error guardando en la nube, usando localStorage como backup');
-        saveMessages(); // Fallback a localStorage
-    }
-}
+// Función saveMessagesToCloud() eliminada para funcionamiento offline
 
 // CSS adicional para animación de fadeOut
 const style = document.createElement('style');
