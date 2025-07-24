@@ -104,6 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
 function forcePWAEvents() {
     console.log('=== APLICANDO FIX PWA ===');
     
+    // Solo aplicar si realmente es PWA
+    if (!window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('No es PWA - Fix no aplicado');
+        return;
+    }
+    
     // Remover todos los event listeners existentes y recrearlos
     const user1 = document.getElementById('user1Btn');
     const user2 = document.getElementById('user2Btn');
@@ -698,3 +704,105 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// ===== INICIALIZACIÓN =====
+
+// Inicializar la aplicación cuando el DOM esté listo
+function initializeApp() {
+    console.log('=== INICIALIZANDO APLICACIÓN ===');
+    
+    // Cargar mensajes del localStorage
+    loadMessages();
+    
+    // Configurar event listeners normales (para web)
+    setupEventListeners();
+    
+    // Actualizar contadores
+    updateMessageCounters();
+    
+    // Iniciar limpieza automática de mensajes
+    startMessageCleanup();
+    
+    // Detectar si es PWA y aplicar fix si es necesario
+    setTimeout(() => {
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('PWA detectada - Aplicando fix de eventos');
+            forcePWAEvents();
+        } else {
+            console.log('Ejecutándose en navegador web normal');
+        }
+    }, 500);
+    
+    console.log('Aplicación inicializada correctamente');
+}
+
+// Configurar event listeners para funcionamiento normal en web
+function setupEventListeners() {
+    console.log('Configurando event listeners para web...');
+    
+    // Botones de usuario - Funcionamiento normal para web
+    if (user1Btn) {
+        user1Btn.onclick = () => {
+            console.log('Click Usuario 1 (web)');
+            showLoginForUser('Usuario 1');
+        };
+    }
+    
+    if (user2Btn) {
+        user2Btn.onclick = () => {
+            console.log('Click Usuario 2 (web)');
+            showLoginForUser('Usuario 2');
+        };
+    }
+    
+    // Login
+    if (loginBtn) {
+        loginBtn.onclick = handleLogin;
+    }
+    
+    if (passwordInput) {
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
+    }
+    
+    // Botón volver
+    if (backBtn) {
+        backBtn.onclick = backToUserSelection;
+    }
+    
+    // Chat
+    if (sendBtn) {
+        sendBtn.onclick = sendMessage;
+    }
+    
+    if (messageInput) {
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        // Auto-resize textarea
+        messageInput.addEventListener('input', () => {
+            messageInput.style.height = 'auto';
+            messageInput.style.height = messageInput.scrollHeight + 'px';
+        });
+    }
+    
+    // Logout
+    if (logoutBtn) {
+        logoutBtn.onclick = logout;
+    }
+    
+    console.log('Event listeners configurados para web');
+}
+
+// Inicializar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    // DOM ya está listo
+    initializeApp();
+}
