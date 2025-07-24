@@ -14,8 +14,8 @@ const CONFIG = {
     },
     // Contraseñas hasheadas para login
     HASHED_PASSWORDS: {
-        "Usuario 1": "b8c5e1a9f7d4e2c6b3a8f5e9d2c7b4a1e8f5c2d9b6a3e0f7d4c1b8e5a2f9c6d3", // "user1_2385" hasheado
-        "Usuario 2": "a7d4b1e8f5c2a9f6d3b0e7c4a1f8e5b2d9c6a3f0e7d4b1a8f5c2e9f6d3b0a7c4"  // "user2_2350" hasheado
+        "Usuario 1": "ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c", // "user1_2385" hasheado
+        "Usuario 2": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5"  // "user2_2350" hasheado
     }
 };
 
@@ -117,6 +117,24 @@ function backToUserSelection() {
     passwordInput.value = '';
     loginScreen.classList.remove('active');
     userSelectionScreen.classList.add('active');
+}
+
+// Función para verificar contraseña con hash SHA-256
+async function verifyPassword(password, hashedPassword) {
+    try {
+        // Generar hash SHA-256 de la contraseña ingresada
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        
+        // Comparar con el hash almacenado
+        return hashHex === hashedPassword;
+    } catch (error) {
+        console.error('Error al verificar contraseña:', error);
+        return false;
+    }
 }
 
 // Manejo del login (ahora con contraseñas hasheadas)
