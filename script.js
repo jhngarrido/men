@@ -603,21 +603,7 @@ function loadAndDisplayMessages() {
     scrollToBottom();
 }
 
-// Eliminar mensaje
-function deleteMessage(messageId) {
-    messages = messages.filter(msg => msg.id !== messageId);
-    saveMessages(); // Backup local
-    saveMessagesToCloud(); // Sincronizar con la nube
-    updateMessageCounters();
-    
-    const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
-    if (messageElement) {
-        messageElement.style.animation = 'fadeOut 0.3s ease';
-        setTimeout(() => {
-            messageElement.remove();
-        }, 300);
-    }
-}
+
 
 // Limpiar mensajes expirados
 function cleanExpiredMessages() {
