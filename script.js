@@ -548,6 +548,40 @@ function displayMessage(message) {
     messagesContainer.appendChild(messageDiv);
 }
 
+// Eliminar mensaje específico
+function deleteMessage(messageId) {
+    console.log('=== ELIMINANDO MENSAJE ===');
+    console.log('ID del mensaje a eliminar:', messageId);
+    
+    // Encontrar el índice del mensaje en el array
+    const messageIndex = messages.findIndex(msg => msg.id === messageId);
+    
+    if (messageIndex !== -1) {
+        // Eliminar del array
+        const deletedMessage = messages.splice(messageIndex, 1)[0];
+        console.log('Mensaje eliminado del array:', deletedMessage);
+        
+        // Guardar cambios en localStorage
+        saveMessages();
+        console.log('Cambios guardados en localStorage');
+        
+        // Eliminar del DOM
+        const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+        if (messageElement) {
+            messageElement.remove();
+            console.log('Elemento eliminado del DOM');
+        }
+        
+        // Actualizar contadores
+        updateMessageCounters();
+        console.log('Contadores actualizados');
+        
+        console.log('=== MENSAJE ELIMINADO EXITOSAMENTE ===');
+    } else {
+        console.log('ERROR: Mensaje no encontrado');
+    }
+}
+
 // Cargar y mostrar todos los mensajes
 function loadAndDisplayMessages() {
     messagesContainer.innerHTML = '';
