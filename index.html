@@ -128,7 +128,7 @@
                 installButton.textContent = '📱 Instalar App';
                 installButton.style.cssText = `
                     position: fixed;
-                    bottom: 20px;
+                    top: 20px;
                     right: 20px;
                     background: #4CAF50;
                     color: white;
@@ -140,6 +140,7 @@
                     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
                     z-index: 1000;
                     transition: all 0.3s ease;
+                    display: block;
                 `;
                 
                 installButton.addEventListener('mouseover', () => {
