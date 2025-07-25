@@ -539,7 +539,10 @@ function displayMessage(message) {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-btn';
         deleteBtn.textContent = 'Eliminar';
-        deleteBtn.onclick = () => deleteMessage(message.id);
+        deleteBtn.onclick = () => {
+            console.log('Click en botón eliminar. ID del mensaje:', message.id);
+            deleteMessage(message.id);
+        };
         info.appendChild(deleteBtn);
     }
     
@@ -567,9 +570,20 @@ function deleteMessage(messageId) {
         
         // Eliminar del DOM
         const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+        console.log('Buscando elemento con selector:', `[data-message-id="${messageId}"]`);
+        console.log('Elemento encontrado:', messageElement);
+        
         if (messageElement) {
             messageElement.remove();
             console.log('Elemento eliminado del DOM');
+        } else {
+            console.log('ERROR: No se encontró el elemento en el DOM');
+            // Intentar con otro selector
+            const allMessages = document.querySelectorAll('.message');
+            console.log('Total de mensajes en DOM:', allMessages.length);
+            allMessages.forEach((msg, index) => {
+                console.log(`Mensaje ${index}:`, msg.dataset.messageId);
+            });
         }
         
         // Actualizar contadores
