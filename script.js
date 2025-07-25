@@ -387,14 +387,11 @@ function handleLogin() {
     console.log('Usuario seleccionado:', selectedUserForLogin);
     console.log('Contraseña ingresada:', password);
     
-    // Verificación directa y simple
-    let loginExitoso = false;
+    // Verificación usando CONFIG.PASSWORDS
+    const correctPassword = CONFIG.PASSWORDS[selectedUserForLogin];
+    console.log('Contraseña correcta esperada:', correctPassword);
     
-    if (selectedUserForLogin === 'Usuario 1' && password === 'user1_2385') {
-        loginExitoso = true;
-    } else if (selectedUserForLogin === 'Usuario 2' && password === 'user2_2350') {
-        loginExitoso = true;
-    }
+    const loginExitoso = password === correctPassword;
     
     console.log('Login exitoso:', loginExitoso);
     
