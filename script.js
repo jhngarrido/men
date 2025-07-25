@@ -471,8 +471,15 @@ function saveMessages() {
 
 // Enviar mensaje
 function sendMessage() {
+    console.log('=== ENVIANDO MENSAJE ===');
     const text = messageInput.value.trim();
-    if (!text || !currentUser) return;
+    console.log('Texto del mensaje:', text);
+    console.log('Usuario actual:', currentUser);
+    
+    if (!text || !currentUser) {
+        console.log('Mensaje vacío o usuario no definido');
+        return;
+    }
     
     const message = {
         id: Date.now() + Math.random(),
@@ -482,15 +489,25 @@ function sendMessage() {
         createdAt: Date.now()
     };
     
+    console.log('Mensaje creado:', message);
+    
     messages.push(message);
+    console.log('Mensaje agregado al array. Total mensajes:', messages.length);
+    
     saveMessages(); // Backup local
-    saveMessagesToCloud(); // Guardar en la nube
+    console.log('Mensaje guardado en localStorage');
+    
     displayMessage(message);
+    console.log('displayMessage() ejecutado');
+    
     updateMessageCounters();
+    console.log('Contadores actualizados');
     
     messageInput.value = '';
     messageInput.style.height = 'auto';
     scrollToBottom();
+    
+    console.log('=== MENSAJE ENVIADO EXITOSAMENTE ===');
 }
 
 // Mostrar mensaje en la interfaz
